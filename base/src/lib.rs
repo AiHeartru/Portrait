@@ -3,6 +3,7 @@ mod portrait;
 use std::fs::create_dir;
 use std::path::Path;
 use std::error::Error;
+use std::time::Duration;
 use portrait::*;
 
 pub struct Base ();
@@ -14,7 +15,7 @@ impl Base {
     }
 
     // 检查是否存在文件夹，否则创建
-    pub fn check_dir() {
+    pub fn create_folder_if_not_exist() {
         let path = "static";
         let p = Path::new(path);
         if !p.exists() {
@@ -24,7 +25,7 @@ impl Base {
     }
 
     // 清空文件夹
-    pub fn clear_dir() {
+    pub fn clear_folder() {
         let path = "static";
         let p = Path::new(path);
         if p.exists() {
@@ -33,18 +34,24 @@ impl Base {
         }
     }
 
-    // 检测最新创建的文件时间
-    pub fn check_file_time() -> Result<(), Box<dyn Error>> {
+    // 上一次的生成时间
+    pub fn last_file_time() -> Result<Duration, Box<dyn Error>> {
         let path = "static";
         let p = Path::new(path);
-        if p.exists() {
+        let t: Duration;
+        t = if p.exists() {
             println!("Checking the latest file time...");
             let mut files = std::fs::read_dir(path)?;
             let file = files.next().expect("no file")?;
             let meta = file.metadata()?;
             let time = meta.modified()?;
-            println!("intervals: {:?}", time.elapsed());
-        }
-        Ok(())
+            println!("Time spent: {:?}", time.elapsed()?);
+            time.elapsed()?
+        } else {
+            println!("Creating a directory...");
+            create_dir(path).unwrap();
+            Duration::new(0, 0)
+        };
+        Ok(t)
     }
 }

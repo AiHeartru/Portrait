@@ -9,7 +9,7 @@ use base::*;
 
 #[rocket::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    Base::check_dir();
+    Base::create_folder_if_not_exist();
     let _rocket = rocket::build()
         .mount("/", routes![index])
         .mount("/", FileServer::from("static/"))
@@ -25,6 +25,6 @@ async fn index() -> Option<NamedFile> {
     if path.is_dir() {
         path.push(pic)
     }
-    let _ = Base::check_file_time();
+    
     NamedFile::open(path).await.ok()
 }
