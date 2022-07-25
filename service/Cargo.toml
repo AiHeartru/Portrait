@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 base = { path = "../base" }
-rocket = {version = "0.5.0-rc.1", features = ["secrets", "tls", "json"]}
+rocket = {version = "0.5.0-rc.1", features = ["tls", "json"]}

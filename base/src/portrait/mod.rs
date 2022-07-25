@@ -12,27 +12,40 @@ enum Axis {
     Vertical
 }
 
-pub struct Portrait ();
+pub struct Portrait{
+    pub padding: u32,
+    pub width: u32,
+    pub height: u32,
+}
+
 impl Portrait {
+    pub fn new() -> Self {
+        Portrait {
+            padding: 12,
+            width: 120,
+            height: 120,
+        }
+    }
+
     // 创建画布
     fn create_canvas(width: u32, height: u32, color: [u8; 3]) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
-        println!("创建画布中...");
+        println!("Creating a canvas...");
         ImageBuffer::from_pixel(width, height, Rgb(color))
     }
 
     // 创建图层
     fn create_layer(color: [u8; 3]) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
-        println!("创建画布完成");
-        println!("创建图层中...");
+        println!("Create canvas to complete");
+        println!("Creating a layer...");
         ImageBuffer::from_pixel(5, 5, Rgb(color))
     }
 
     // 生成
-    pub fn gen_portrait(width: u32, height: u32, color: [u8; 3]) -> String {
-        let mut canvas = Self::create_canvas(width, height, color);
+    pub fn gen_portrait(&self, color: [u8; 3]) -> String {
+        let mut canvas = Self::create_canvas(self.width, self.height, color);
         let mut layer = Self::create_layer(color);
-        println!("创建图层完成");
-        println!("生成中...");
+        println!("Create layer to complete");
+        println!("Generating...");
         let mut rng = thread_rng();
         let axis = if rand::random::<bool>() {
             Axis::Horizontal
@@ -56,12 +69,12 @@ impl Portrait {
                 }
             }
         }
-        let layer = imageops::resize(&layer, 128, 128, FilterType::Nearest);
-        imageops::overlay(&mut canvas, &layer, 11, 11);
+        let layer = imageops::resize(&layer, self.width - self.padding * 2, self.width - self.padding * 2, FilterType::Nearest);
+        imageops::overlay(&mut canvas, &layer, self.padding, self.padding);
         let file_name = color.to_vec().iter().map(|x| format!("{:02x}", x)).collect::<String>() + ".png";
         let path = Path::new("static/").join(&file_name);
         canvas.save(&path).unwrap();
-        println!("生成完成！");
+        println!("Generated!");
         file_name
     }
 }
